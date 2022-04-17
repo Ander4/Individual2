@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
                             System.out.println("Resultado");
                             System.out.println(result);
 
-                            if (result == user.getText().toString()) {
+                            if (result.equals("["+user.getText().toString()+"]")) {
 
                                 Intent i = new Intent(MainActivity.this, Prueba.class);
                                 startActivityForResult(i, 66);

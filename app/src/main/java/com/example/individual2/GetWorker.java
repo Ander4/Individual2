@@ -36,8 +36,8 @@ public class GetWorker extends Worker {
         String pass = getInputData().getString("pass");
 
         Uri.Builder builder = new Uri.Builder()
-                .appendQueryParameter("nombre", user)
-                .appendQueryParameter("pass", pass);
+                .appendQueryParameter("nombre", user);
+//                .appendQueryParameter("pass", pass);
         String parametros = builder.build().getEncodedQuery();
 
         try {
@@ -72,6 +72,7 @@ public class GetWorker extends Worker {
                 Data resultados = new Data.Builder()
                         .putString("datos",lista.toString())
                         .build();
+                System.out.println(resultados);
                 return Result.success(resultados);
             }
 
