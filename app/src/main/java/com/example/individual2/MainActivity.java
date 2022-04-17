@@ -7,7 +7,9 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -21,25 +23,44 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void onGet(View view) {
-        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(GetWorker.class).build();
+    public void onEntrar(View view) {
+        EditText user = findViewById(R.id.username);
+        EditText pass = findViewById(R.id.password);
+
+        System.out.println(user.getText().toString());
+
+        Data datos = new Data.Builder().putString("nombre",user.getText().toString()).putString("pass",pass.getText().toString()).build();
+        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(GetWorker.class).setInputData(datos).build();
         WorkManager.getInstance(this).getWorkInfoByIdLiveData(otwr.getId())
                 .observe(this, new Observer<WorkInfo>() {
                     @Override
                     public void onChanged(WorkInfo workInfo) {
                         if(workInfo != null && workInfo.getState().isFinished()){
-                            TextView textViewResult = findViewById(R.id.textView);
-                            textViewResult.setText(workInfo.getOutputData().getString("datos"));
+
+                            String result = workInfo.getOutputData().getString("datos");
+                            System.out.println("Resultado");
+                            System.out.println(result);
+
+                            if (result == user.getText().toString()) {
+
+                                Intent i = new Intent(MainActivity.this, Prueba.class);
+                                startActivityForResult(i, 66);
+
+
+                            }
+
                         }
                     }
                 });
         WorkManager.getInstance(this).enqueue(otwr);
     }
-    public void onInsert(View view) {
-        EditText editText = findViewById(R.id.etInsert);
-        String pokimon = editText.getText().toString();
-        Data datos = new Data.Builder().putString("pokimon",pokimon).build();
-        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(InsertWorker.class).setInputData(datos).build();
-        WorkManager.getInstance(this).enqueue(otwr);
+
+    public void onRegister(View v){
+
+        //Log.i("Recorrido","Paso por onRegister MainActivity");
+        Intent i = new Intent(this, Register.class);
+        startActivityForResult(i, 66);
+
     }
+
 }

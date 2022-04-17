@@ -1,6 +1,8 @@
 package com.example.individual2;
 
 import android.content.Context;
+import android.net.Uri;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.work.Data;
@@ -21,6 +23,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class InsertWorker extends Worker {
+
     public InsertWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
@@ -28,10 +31,19 @@ public class InsertWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        String direccion = "http://ec2-18-132-60-229.eu-west-2.compute.amazonaws.com/midoyaga002/WEB/insertnombres.php";
+        String direccion = "http://ec2-18-132-60-229.eu-west-2.compute.amazonaws.com/aeiros001/WEB/insert.php";
         HttpURLConnection urlConnection;
-        String pokimon = getInputData().getString("pokimon");
-        String parametros = "nombrePokemon="+pokimon;
+//        String pokimon = getInputData().getString("pokimon");
+//        String parametros = "nombrePokemon="+pokimon;
+
+        String nombre = getInputData().getString("nombre");
+        String pass = getInputData().getString("pass");
+
+        Uri.Builder builder = new Uri.Builder()
+                .appendQueryParameter("nombre", nombre)
+                .appendQueryParameter("pass", pass);
+        String parametros = builder.build().getEncodedQuery();
+
         try {
             URL destino = new URL(direccion);
             urlConnection = (HttpURLConnection) destino.openConnection();
@@ -43,7 +55,9 @@ public class InsertWorker extends Worker {
             PrintWriter out = new PrintWriter(urlConnection.getOutputStream());
             out.print(parametros);
             out.close();
+            System.out.println(parametros);
             int statusCode = urlConnection.getResponseCode();
+            System.out.println(statusCode);
             if (statusCode == 200) {
                 return Result.success();
             }

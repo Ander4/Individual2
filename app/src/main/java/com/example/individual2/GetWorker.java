@@ -1,6 +1,7 @@
 package com.example.individual2;
 
 import android.content.Context;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.work.Data;
@@ -14,6 +15,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -27,18 +29,34 @@ public class GetWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        String direccion = "http://ec2-18-132-60-229.eu-west-2.compute.amazonaws.com/midoyaga002/WEB/getnombres.php";
+        String direccion = "http://ec2-18-132-60-229.eu-west-2.compute.amazonaws.com/aeiros001/WEB/select.php";
         HttpURLConnection urlConnection;
+
+        String user = getInputData().getString("nombre");
+        String pass = getInputData().getString("pass");
+
+        Uri.Builder builder = new Uri.Builder()
+                .appendQueryParameter("nombre", user)
+                .appendQueryParameter("pass", pass);
+        String parametros = builder.build().getEncodedQuery();
+
         try {
             URL destino = new URL(direccion);
             urlConnection = (HttpURLConnection) destino.openConnection();
             urlConnection.setConnectTimeout(5000);
             urlConnection.setReadTimeout(5000);
+            urlConnection.setRequestMethod("POST");
+            urlConnection.setDoOutput(true);
+            urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            PrintWriter out = new PrintWriter(urlConnection.getOutputStream());
+            out.print(parametros);
+            out.close();
             int statusCode = urlConnection.getResponseCode();
             if (statusCode == 200) {
                 BufferedInputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
                 String line, result = "";
+                System.out.println("Resultado del Query: " + user);
                 while ((line = bufferedReader.readLine()) != null) {
                     result += line;
                 }
@@ -46,7 +64,7 @@ public class GetWorker extends Worker {
                 ArrayList<String> lista = new ArrayList<>();
                 for(int i = 0; i < jsonArray.length(); i++)
                 {
-                    String nombre = jsonArray.getJSONObject(i).getString("Nombre");
+                    String nombre = jsonArray.getJSONObject(i).getString("nombre");
                     lista.add(nombre);
                 }
                 inputStream.close();
