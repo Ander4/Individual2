@@ -2,12 +2,14 @@ package com.example.individual2;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.Observer;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
+import android.Manifest;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
@@ -26,12 +28,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ActivityManager am= (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            if (am.isBackgroundRestricted()==true){
-                //pedir permiso
-            }
-        }
+//        ActivityManager am= (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+//            if (am.isBackgroundRestricted()==true){
+//                ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.READ_PHONE_STATE},1);
+//            }
+//        }
 
 //        FirebaseMessaging.getInstance().getToken()
 //                .addOnCompleteListener(new OnCompleteListener<String>() {

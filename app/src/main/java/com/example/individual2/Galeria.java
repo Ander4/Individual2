@@ -19,6 +19,8 @@ import java.util.Locale;
 
 public class Galeria extends AppCompatActivity {
 
+    Uri uriimagen = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +39,6 @@ public class Galeria extends AppCompatActivity {
         String nombrefich = "IMG_" + timeStamp + "_";
         File directorio=this.getFilesDir();
         File fichImg = null;
-        Uri uriimagen = null;
 
         try {
             fichImg = File.createTempFile(nombrefich, ".jpg",directorio);
@@ -55,12 +56,12 @@ public class Galeria extends AppCompatActivity {
     }
 
 
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == 4 && resultCode == RESULT_OK) {
-//            ImageView elImageView = findViewById(R.id.imageView);
-//            elImageView.setImageURI(uriimagen);
-//        }
-//    }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 4 && resultCode == RESULT_OK) {
+            ImageView elImageView = findViewById(R.id.imageView);
+            elImageView.setImageURI(uriimagen);
+        }
+    }
 }
