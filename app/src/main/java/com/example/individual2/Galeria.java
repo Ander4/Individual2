@@ -5,6 +5,8 @@ import androidx.core.content.FileProvider;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -61,7 +63,42 @@ public class Galeria extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 4 && resultCode == RESULT_OK) {
             ImageView elImageView = findViewById(R.id.imageView);
-            elImageView.setImageURI(uriimagen);
+
+            Bitmap bitmapFoto = null;
+            try {
+                bitmapFoto = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uriimagen);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            int anchoDestino = elImageView.getWidth();
+            int altoDestino = elImageView.getHeight();
+            int anchoImagen = bitmapFoto.getWidth();
+            int altoImagen = bitmapFoto.getHeight();
+            float ratioImagen = (float) anchoImagen / (float) altoImagen;
+            float ratioDestino = (float) anchoDestino / (float) altoDestino;
+            int anchoFinal = anchoDestino;
+            int altoFinal = altoDestino;
+            System.out.println(anchoFinal + " " + altoFinal);
+            if (ratioDestino > ratioImagen) {
+                anchoFinal = (int) ((float)altoDestino * ratioImagen);
+            } else {
+                altoFinal = (int) ((float)anchoDestino / ratioImagen);
+            }
+            Bitmap bitmapredimensionado = Bitmap.createScaledBitmap(bitmapFoto,anchoFinal,altoFinal,true);
+
+            Matrix matrix = new Matrix();
+
+            matrix.postRotate(90);
+
+            Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmapredimensionado, anchoFinal, altoFinal, true);
+
+            Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+
+            elImageView.setImageBitmap(rotatedBitmap);
+
+            ImageView img = findViewById(R.id.imageView2);
+            img.setImageURI(uriimagen);
         }
     }
 }
