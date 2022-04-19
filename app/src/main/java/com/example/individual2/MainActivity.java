@@ -1,5 +1,6 @@
 package com.example.individual2;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.work.Data;
@@ -7,12 +8,16 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,6 +25,24 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ActivityManager am= (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (am.isBackgroundRestricted()==true){
+                //pedir permiso
+            }
+        }
+
+//        FirebaseMessaging.getInstance().getToken()
+//                .addOnCompleteListener(new OnCompleteListener<String>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<String> task) {
+//                        if (!task.isSuccessful()) {
+//                            return;
+//                        }
+//                        String token = task.getResult();
+//                    }
+//                });
 
     }
 
@@ -43,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
                             if (result.equals("["+user.getText().toString()+"]")) {
 
-                                Intent i = new Intent(MainActivity.this, Prueba.class);
+                                Intent i = new Intent(MainActivity.this, Galeria.class);
                                 startActivityForResult(i, 66);
 
 
