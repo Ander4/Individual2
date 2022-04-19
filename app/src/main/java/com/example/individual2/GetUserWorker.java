@@ -21,23 +21,22 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class GetWorker extends Worker {
-    public GetWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+public class GetUserWorker extends Worker {
+
+    public GetUserWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
 
     @NonNull
     @Override
     public Result doWork() {
-        String direccion = "http://ec2-18-132-60-229.eu-west-2.compute.amazonaws.com/aeiros001/WEB/select.php";
+        String direccion = "http://ec2-18-132-60-229.eu-west-2.compute.amazonaws.com/aeiros001/WEB/selectUser.php";
         HttpURLConnection urlConnection;
 
         String user = getInputData().getString("nombre");
-        String pass = getInputData().getString("pass");
 
         Uri.Builder builder = new Uri.Builder()
-                .appendQueryParameter("nombre", user)
-                .appendQueryParameter("pass", pass);
+                .appendQueryParameter("nombre", user);
         String parametros = builder.build().getEncodedQuery();
 
         try {
@@ -87,3 +86,4 @@ public class GetWorker extends Worker {
         return Result.failure();
     }
 }
+

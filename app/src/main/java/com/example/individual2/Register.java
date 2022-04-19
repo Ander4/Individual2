@@ -27,7 +27,7 @@ public class Register extends AppCompatActivity {
         EditText editText2 = findViewById(R.id.passwordR);
         String pass = editText2.getText().toString();
         Data datos = new Data.Builder().putString("nombre",nombre).build();
-        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(GetWorker.class).setInputData(datos).build();
+        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(GetUserWorker.class).setInputData(datos).build();
 
         WorkManager.getInstance(this).getWorkInfoByIdLiveData(otwr.getId())
                 .observe(this, new Observer<WorkInfo>() {
