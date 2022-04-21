@@ -26,24 +26,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ActivityManager am= (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            if (am.isBackgroundRestricted()==true){
-                System.out.println("No esta el permiso concedido");
-            }
-        }
-
-//        FirebaseMessaging.getInstance().getToken()
-//                .addOnCompleteListener(new OnCompleteListener<String>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<String> task) {
-//                        if (!task.isSuccessful()) {
-//                            return;
-//                        }
-//                        String token = task.getResult();
-//                    }
-//                });
-
     }
 
     public void onEntrar(View view) {
@@ -80,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void onRegister(View v){
 
-        //Log.i("Recorrido","Paso por onRegister MainActivity");
         Intent i = new Intent(this, Register.class);
         startActivityForResult(i, 66);
 
