@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         ActivityManager am= (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             if (am.isBackgroundRestricted()==true){
-                //pedir permiso
+                System.out.println("No esta el permiso concedido");
             }
         }
 

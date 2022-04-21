@@ -2,46 +2,36 @@ package com.example.individual2;
 
 import android.content.Context;
 import android.net.Uri;
-import android.widget.EditText;
 
 import androidx.annotation.NonNull;
-import androidx.work.Data;
+import androidx.work.ListenableWorker;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 
-public class InsertWorker extends Worker {
+public class FCMWorker extends Worker {
 
-    public InsertWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+    public FCMWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
 
     @NonNull
     @Override
-    public Result doWork() {
-        String direccion = "http://ec2-52-56-170-196.eu-west-2.compute.amazonaws.com/aeiros001/WEB/insert.php";
+    public ListenableWorker.Result doWork() {
+        String direccion = "http://ec2-52-56-170-196.eu-west-2.compute.amazonaws.com/aeiros001/WEB/fcm.php";
         HttpURLConnection urlConnection;
-//        String pokimon = getInputData().getString("pokimon");
-//        String parametros = "nombrePokemon="+pokimon;
 
-        String nombre = getInputData().getString("nombre");
-        String pass = getInputData().getString("pass");
+        String id = getInputData().getString("id");
+        String user = getInputData().getString("nombre");
 
         Uri.Builder builder = new Uri.Builder()
-                .appendQueryParameter("nombre", nombre)
-                .appendQueryParameter("pass", pass);
+                .appendQueryParameter("id", id)
+                .appendQueryParameter("nombre",user);
         String parametros = builder.build().getEncodedQuery();
 
         try {
@@ -59,7 +49,8 @@ public class InsertWorker extends Worker {
             int statusCode = urlConnection.getResponseCode();
             System.out.println(statusCode);
             if (statusCode == 200) {
-                return Result.success();
+                System.out.println("Se ha enviado el mesaje");
+                return ListenableWorker.Result.success();
             }
 
         } catch (MalformedURLException e) {
@@ -68,6 +59,7 @@ public class InsertWorker extends Worker {
             e.printStackTrace();
         }
 
-        return Result.failure();
+        return ListenableWorker.Result.failure();
     }
+
 }
