@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
                             if (result.equals("["+user.getText().toString()+"]")) {
 
                                 Intent i = new Intent(MainActivity.this, Galeria.class);
+                                i.putExtra("user",user.getText().toString());
                                 startActivityForResult(i, 66);
 
 

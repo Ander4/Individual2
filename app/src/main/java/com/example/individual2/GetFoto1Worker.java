@@ -1,7 +1,10 @@
 package com.example.individual2;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.util.Base64;
 
 import androidx.annotation.NonNull;
 import androidx.work.Data;
@@ -13,6 +16,7 @@ import org.json.JSONException;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -39,6 +43,7 @@ public class GetFoto1Worker extends Worker {
                 .appendQueryParameter("nombre", user);
         String parametros = builder.build().getEncodedQuery();
 
+
         try {
             URL destino = new URL(direccion);
             urlConnection = (HttpURLConnection) destino.openConnection();
@@ -52,37 +57,20 @@ public class GetFoto1Worker extends Worker {
             out.close();
             int statusCode = urlConnection.getResponseCode();
             if (statusCode == 200) {
-                BufferedInputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-                String line, result = "";
-                System.out.println("Resultado del Query: " + user);
-                while ((line = bufferedReader.readLine()) != null) {
-                    result += line;
-                }
-                JSONArray jsonArray = new JSONArray(result);
-                ArrayList<String> lista = new ArrayList<>();
-                for(int i = 0; i < jsonArray.length(); i++)
-                {
-                    String nombre = jsonArray.getJSONObject(i).getString("foto1");
-                    lista.add(nombre);
-                }
-                inputStream.close();
-
-                Data resultados = new Data.Builder()
-                        .putString("datos",lista.toString())
-                        .build();
-                System.out.println("PRUEBITAS");
-                System.out.println(resultados);
-                return Result.success(resultados);
+                    Bitmap elBitmap = BitmapFactory.decodeStream(urlConnection.getInputStream());
+                    return Result.success();
             }
+
+
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
 
         return Result.failure();
     }

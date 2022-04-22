@@ -2,6 +2,11 @@ package com.example.individual2;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
+import androidx.lifecycle.Observer;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -22,17 +27,78 @@ import java.util.Locale;
 public class Galeria extends AppCompatActivity {
 
     Uri uriimagen = null;
+    int numFoto = 1;
+    String user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_galeria);
 
-        if (getIntent().getExtras() != null) {
-            String mensaje= getIntent().getExtras().getString("mensaje");
-            String fecha= getIntent().getExtras().getString("fecha");
+        Intent iin = getIntent();
+        Bundle b = iin.getExtras();
+        user = (String) b.get("user");
+
+    }
+
+//    private void getImages(){
+//
+//        Data datos = new Data.Builder().putString("nombre",user.getText().toString()).putString("pass",pass.getText().toString()).build();
+//        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(GetWorker.class).setInputData(datos).build();
+//        WorkManager.getInstance(this).getWorkInfoByIdLiveData(otwr.getId())
+//                .observe(this, new Observer<WorkInfo>() {
+//                    @Override
+//                    public void onChanged(WorkInfo workInfo) {
+//                        if(workInfo != null && workInfo.getState().isFinished()){
+//
+//                            String result = workInfo.getOutputData().getString("datos");
+//                            System.out.println("Resultado");
+//                            System.out.println(result);
+//
+//                            if (result.equals("["+user.getText().toString()+"]")) {
+//
+//                                Intent i = new Intent(MainActivity.this, Galeria.class);
+//                                startActivityForResult(i, 66);
+//
+//
+//                            }
+//
+//                        }
+//                    }
+//                });
+//        WorkManager.getInstance(this).enqueue(otwr);
+//
+//    }
+
+    private void setNumFoto(){
+
+        ImageView elImageView = findViewById(R.id.imageView);
+        ImageView elImageView2 = findViewById(R.id.imageView2);
+        ImageView elImageView3 = findViewById(R.id.imageView3);
+        ImageView elImageView4 = findViewById(R.id.imageView4);
+
+        if (elImageView.getDrawable() == null) {
+
+            numFoto = 1;
+            System.out.println("Es null la foto1");
+
+        } else if (elImageView2.getDrawable() == null) {
+
+            numFoto = 2;
+            System.out.println("Es null la foto2");
+
+        } else if (elImageView3.getDrawable() == null) {
+
+            numFoto = 3;
+            System.out.println("Es null la foto3");
+
+        } else if (elImageView4.getDrawable() == null) {
+
+            numFoto = 4;
+            System.out.println("Es null la foto4");
 
         }
+
     }
 
     public void onEntrar(View view) {
@@ -44,7 +110,6 @@ public class Galeria extends AppCompatActivity {
 
         try {
             fichImg = File.createTempFile(nombrefich, ".jpg",directorio);
-            //uriimagen = FileProvider.getUriForFile(this, "com.example.tema17ejercicio1.provider", fichImg);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -63,6 +128,8 @@ public class Galeria extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 4 && resultCode == RESULT_OK) {
             ImageView elImageView = findViewById(R.id.imageView);
+
+            setNumFoto();
 
             Bitmap bitmapFoto = null;
             try {
@@ -97,8 +164,50 @@ public class Galeria extends AppCompatActivity {
 
             elImageView.setImageBitmap(rotatedBitmap);
 
-            ImageView img = findViewById(R.id.imageView2);
-            img.setImageURI(uriimagen);
+            setImages(rotatedBitmap);
         }
     }
+
+    private void setImages(Bitmap bitmap){
+
+        switch (numFoto){
+
+            case 1: {
+
+                ImageView elImageView = findViewById(R.id.imageView);
+                elImageView.setImageBitmap(bitmap);
+                Data datos = new Data.Builder().putString("nombre",user).putString("foto", uriimagen.toString()).build();
+                OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(SetFoto1Worker.class).setInputData(datos).build();
+                WorkManager.getInstance(this).enqueue(otwr);
+                break;
+            }
+
+            case 2: {
+
+                ImageView elImageView = findViewById(R.id.imageView2);
+                elImageView.setImageBitmap(bitmap);
+                break;
+
+            }
+
+            case 3: {
+
+                ImageView elImageView = findViewById(R.id.imageView3);
+                elImageView.setImageBitmap(bitmap);
+                break;
+
+            }
+
+            case 4: {
+
+                ImageView elImageView = findViewById(R.id.imageView4);
+                elImageView.setImageBitmap(bitmap);
+                break;
+
+            }
+
+        }
+
+    }
+
 }
