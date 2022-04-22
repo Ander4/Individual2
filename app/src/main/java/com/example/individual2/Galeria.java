@@ -10,19 +10,26 @@ import androidx.work.WorkManager;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.view.View;
 import android.widget.ImageView;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class Galeria extends AppCompatActivity {
 
@@ -39,36 +46,69 @@ public class Galeria extends AppCompatActivity {
         Bundle b = iin.getExtras();
         user = (String) b.get("user");
 
+        getImages();
+
     }
 
-//    private void getImages(){
+    private void getImages(){
+
+        Data datos = new Data.Builder().putString("nombre",user).build();
+        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(GetFoto1Worker.class).setInputData(datos).build();
+        WorkManager.getInstance(this).getWorkInfoByIdLiveData(otwr.getId())
+                .observe(this, new Observer<WorkInfo>() {
+                    @Override
+                    public void onChanged(WorkInfo workInfo) {
+                        if(workInfo != null && workInfo.getState().isFinished()){
+
+                            String result = workInfo.getOutputData().getString("datos");
+                            System.out.println("Resultado");
+                            System.out.println(result);
+
+                            System.out.println("Estoy en worker para coger foto de la base de datos");
+
+                            try {
+                                BufferedReader ficherointerno = new BufferedReader(new InputStreamReader(
+                                        openFileInput("foto.txt")));
+                                String Linea = ficherointerno.lines().collect(Collectors.joining());
+                                ficherointerno.close();
+
+                                System.out.println("UWU "+Linea);
+
+                                byte[] decodedString = Base64.decode(Linea, Base64.DEFAULT);
+                                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+                                ImageView img  = findViewById(R.id.imageView);
+                                img.setImageBitmap(decodedByte);
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+//                            if (result != null) {
 //
-//        Data datos = new Data.Builder().putString("nombre",user.getText().toString()).putString("pass",pass.getText().toString()).build();
-//        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(GetWorker.class).setInputData(datos).build();
-//        WorkManager.getInstance(this).getWorkInfoByIdLiveData(otwr.getId())
-//                .observe(this, new Observer<WorkInfo>() {
-//                    @Override
-//                    public void onChanged(WorkInfo workInfo) {
-//                        if(workInfo != null && workInfo.getState().isFinished()){
+//                                try {
+//                                    BufferedReader ficherointerno = new BufferedReader(new InputStreamReader(
+//                                            openFileInput("nombrefichero.txt")));
+//                                    String Linea = ficherointerno.lines().collect(Collectors.joining());
+//                                    ficherointerno.close();
 //
-//                            String result = workInfo.getOutputData().getString("datos");
-//                            System.out.println("Resultado");
-//                            System.out.println(result);
+//                                    Bitmap bitmap = StringToBitMap(Linea);
 //
-//                            if (result.equals("["+user.getText().toString()+"]")) {
+//                                    ImageView elImageView = findViewById(R.id.imageView);
+//                                    elImageView.setImageBitmap(bitmap);
 //
-//                                Intent i = new Intent(MainActivity.this, Galeria.class);
-//                                startActivityForResult(i, 66);
-//
+//                                } catch (IOException e) {
+//                                    e.printStackTrace();
+//                                }
 //
 //                            }
-//
-//                        }
-//                    }
-//                });
-//        WorkManager.getInstance(this).enqueue(otwr);
-//
-//    }
+
+                        }
+                    }
+                });
+        WorkManager.getInstance(this).enqueue(otwr);
+
+    }
 
     private void setNumFoto(){
 
@@ -129,8 +169,8 @@ public class Galeria extends AppCompatActivity {
         if (requestCode == 4 && resultCode == RESULT_OK) {
             ImageView elImageView = findViewById(R.id.imageView);
 
-            setNumFoto();
-
+            //setNumFoto();
+            //System.out.println("NUM FOTOS: " + numFoto);
             Bitmap bitmapFoto = null;
             try {
                 bitmapFoto = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uriimagen);
@@ -162,8 +202,6 @@ public class Galeria extends AppCompatActivity {
 
             Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
 
-            elImageView.setImageBitmap(rotatedBitmap);
-
             setImages(rotatedBitmap);
         }
     }
@@ -174,6 +212,7 @@ public class Galeria extends AppCompatActivity {
 
             case 1: {
 
+                System.out.println(bitmap);
                 ImageView elImageView = findViewById(R.id.imageView);
                 elImageView.setImageBitmap(bitmap);
                 Data datos = new Data.Builder().putString("nombre",user).putString("foto", uriimagen.toString()).build();

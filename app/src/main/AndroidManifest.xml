@@ -31,12 +31,15 @@
 
         <activity
             android:name=".Galeria"
+            android:launchMode="singleTask"
             android:exported="false" />
         <activity
             android:name=".Register"
+            android:launchMode="singleTask"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
+            android:launchMode="singleTask"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

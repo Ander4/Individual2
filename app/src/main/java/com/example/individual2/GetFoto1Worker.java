@@ -19,11 +19,13 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class GetFoto1Worker extends Worker {
 
@@ -57,11 +59,26 @@ public class GetFoto1Worker extends Worker {
             out.close();
             int statusCode = urlConnection.getResponseCode();
             if (statusCode == 200) {
-                    Bitmap elBitmap = BitmapFactory.decodeStream(urlConnection.getInputStream());
+                Bitmap elBitmap = BitmapFactory.decodeStream(urlConnection.getInputStream());
+                System.out.println(elBitmap);
+                try {
+                    System.out.println("User del worker GETFOTO1: " + user);
+
+                    Scanner s = new Scanner(urlConnection.getInputStream()).useDelimiter("\\A");
+                    String result = s.hasNext() ? s.next() : "";
+                    OutputStreamWriter fichero = new OutputStreamWriter(getApplicationContext().openFileOutput("foto.txt",
+                            Context.MODE_PRIVATE));
+                    fichero.write(result);
+                    fichero.close();
                     return Result.success();
+
+                } catch (IOException e){
+
+                    e.printStackTrace();
+
+                }
+
             }
-
-
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
