@@ -2,12 +2,14 @@ package com.example.individual2;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.Observer;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
+import android.Manifest;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +27,24 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        ActivityManager am= (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+//            if (am.isBackgroundRestricted()==true){
+//                ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.READ_PHONE_STATE},1);
+//            }
+//        }
+
+//        FirebaseMessaging.getInstance().getToken()
+//                .addOnCompleteListener(new OnCompleteListener<String>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<String> task) {
+//                        if (!task.isSuccessful()) {
+//                            return;
+//                        }
+//                        String token = task.getResult();
+//                    }
+//                });
 
     }
 
@@ -49,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
                             if (result.equals("["+user.getText().toString()+"]")) {
 
                                 Intent i = new Intent(MainActivity.this, Galeria.class);
+                                i.putExtra("user",user.getText().toString());
                                 startActivityForResult(i, 66);
 
 
@@ -62,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onRegister(View v){
 
+        //Log.i("Recorrido","Paso por onRegister MainActivity");
         Intent i = new Intent(this, Register.class);
         startActivityForResult(i, 66);
 

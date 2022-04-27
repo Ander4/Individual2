@@ -3,11 +3,14 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/ander/AndroidStudioProjects/Individual2/app/src/main/res/drawable-v21/app_widget_background.xml" value="0.122" />
         <entry key="..\:/Users/ander/AndroidStudioProjects/Individual2/app/src/main/res/layout/activity_galeria.xml" value="0.264" />
         <entry key="..\:/Users/ander/AndroidStudioProjects/Individual2/app/src/main/res/layout/activity_main.xml" value="0.22826086956521738" />
         <entry key="..\:/Users/ander/AndroidStudioProjects/Individual2/app/src/main/res/layout/activity_prueba.xml" value="0.22826086956521738" />
         <entry key="..\:/Users/ander/AndroidStudioProjects/Individual2/app/src/main/res/layout/prueba.xml" value="0.22826086956521738" />
         <entry key="..\:/Users/ander/AndroidStudioProjects/Individual2/app/src/main/res/layout/register.xml" value="0.11302083333333333" />
+        <entry key="..\:/Users/ander/AndroidStudioProjects/Individual2/app/src/main/res/layout/widget.xml" value="0.2" />
+        <entry key="..\:/Users/ander/AndroidStudioProjects/Individual2/app/src/main/res/xml/configalmacen.xml" value="0.2" />
       </map>
     </option>
   </component>
