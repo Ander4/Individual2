@@ -9,6 +9,7 @@ import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -17,7 +18,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import java.io.BufferedReader;
@@ -110,12 +113,43 @@ public class Galeria extends AppCompatActivity {
 
     }
 
-    private void setNumFoto(){
+    private void setNumFotoPortrait(){
 
         ImageView elImageView = findViewById(R.id.imageView);
         ImageView elImageView2 = findViewById(R.id.imageView2);
         ImageView elImageView3 = findViewById(R.id.imageView3);
         ImageView elImageView4 = findViewById(R.id.imageView4);
+
+        if (elImageView.getDrawable() == null) {
+
+            numFoto = 1;
+            System.out.println("Es null la foto1");
+
+        } else if (elImageView2.getDrawable() == null) {
+
+            numFoto = 2;
+            System.out.println("Es null la foto2");
+
+        } else if (elImageView3.getDrawable() == null) {
+
+            numFoto = 3;
+            System.out.println("Es null la foto3");
+
+        } else if (elImageView4.getDrawable() == null) {
+
+            numFoto = 4;
+            System.out.println("Es null la foto4");
+
+        }
+
+    }
+
+    private void setNumFotoLandscape(){
+
+        ImageView elImageView = findViewById(R.id.imageView5);
+        ImageView elImageView2 = findViewById(R.id.imageView6);
+        ImageView elImageView3 = findViewById(R.id.imageView7);
+        ImageView elImageView4 = findViewById(R.id.imageView8);
 
         if (elImageView.getDrawable() == null) {
 
@@ -167,9 +201,26 @@ public class Galeria extends AppCompatActivity {
 
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 4 && resultCode == RESULT_OK) {
-            ImageView elImageView = findViewById(R.id.imageView);
 
-            setNumFoto();
+            int rotacion;
+            ImageView elImageView;
+
+            int orientation = getResources().getConfiguration().orientation;
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
+                // Si está en LANDSCAPE conseguir los datos de su layout
+                setNumFotoLandscape();
+                elImageView = findViewById(R.id.imageView5);
+                rotacion = 0;
+
+            } else {
+
+                // Si está en PORTRAIT conseguir los datos de su layout
+                setNumFotoPortrait();
+                elImageView = findViewById(R.id.imageView);
+                rotacion = 90;
+
+            }
             //System.out.println("NUM FOTOS: " + numFoto);
             Bitmap bitmapFoto = null;
             try {
@@ -196,7 +247,7 @@ public class Galeria extends AppCompatActivity {
 
             Matrix matrix = new Matrix();
 
-            matrix.postRotate(90);
+            matrix.postRotate(rotacion);
 
             Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmapredimensionado, anchoFinal, altoFinal, true);
 
@@ -208,13 +259,29 @@ public class Galeria extends AppCompatActivity {
 
     private void setImages(Bitmap bitmap){
 
+
+
         switch (numFoto){
 
             case 1: {
 
-                System.out.println(bitmap);
-                ImageView elImageView = findViewById(R.id.imageView);
-                elImageView.setImageBitmap(bitmap);
+                // Comprobar la orientación del dispositivo
+                int orientation = getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
+                    // Si está en LANDSCAPE conseguir los datos de su layout
+                    ImageView elImageView = findViewById(R.id.imageView5);
+                    elImageView.setImageBitmap(bitmap);
+
+
+                } else {
+
+                    // Si está en PORTRAIT conseguir los datos de su layout
+                    ImageView elImageView = findViewById(R.id.imageView);
+                    elImageView.setImageBitmap(bitmap);
+
+                }
+
                 Data datos = new Data.Builder().putString("nombre",user).putString("foto", uriimagen.toString()).build();
                 OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(SetFoto1Worker.class).setInputData(datos).build();
                 WorkManager.getInstance(this).enqueue(otwr);
@@ -223,8 +290,23 @@ public class Galeria extends AppCompatActivity {
 
             case 2: {
 
-                ImageView elImageView = findViewById(R.id.imageView2);
-                elImageView.setImageBitmap(bitmap);
+                // Comprobar la orientación del dispositivo
+                int orientation = getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
+                    // Si está en LANDSCAPE conseguir los datos de su layout
+                    ImageView elImageView = findViewById(R.id.imageView6);
+                    elImageView.setImageBitmap(bitmap);
+
+
+                } else {
+
+                    // Si está en PORTRAIT conseguir los datos de su layout
+                    ImageView elImageView = findViewById(R.id.imageView2);
+                    elImageView.setImageBitmap(bitmap);
+
+                }
+
                 Data datos = new Data.Builder().putString("nombre",user).putString("foto", uriimagen.toString()).build();
                 OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(SetFoto2Worker.class).setInputData(datos).build();
                 WorkManager.getInstance(this).enqueue(otwr);
@@ -234,8 +316,23 @@ public class Galeria extends AppCompatActivity {
 
             case 3: {
 
-                ImageView elImageView = findViewById(R.id.imageView3);
-                elImageView.setImageBitmap(bitmap);
+                // Comprobar la orientación del dispositivo
+                int orientation = getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
+                    // Si está en LANDSCAPE conseguir los datos de su layout
+                    ImageView elImageView = findViewById(R.id.imageView7);
+                    elImageView.setImageBitmap(bitmap);
+
+
+                } else {
+
+                    // Si está en PORTRAIT conseguir los datos de su layout
+                    ImageView elImageView = findViewById(R.id.imageView3);
+                    elImageView.setImageBitmap(bitmap);
+
+                }
+
                 Data datos = new Data.Builder().putString("nombre",user).putString("foto", uriimagen.toString()).build();
                 OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(SetFoto3Worker.class).setInputData(datos).build();
                 WorkManager.getInstance(this).enqueue(otwr);
@@ -245,8 +342,23 @@ public class Galeria extends AppCompatActivity {
 
             case 4: {
 
-                ImageView elImageView = findViewById(R.id.imageView4);
-                elImageView.setImageBitmap(bitmap);
+                // Comprobar la orientación del dispositivo
+                int orientation = getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
+                    // Si está en LANDSCAPE conseguir los datos de su layout
+                    ImageView elImageView = findViewById(R.id.imageView8);
+                    elImageView.setImageBitmap(bitmap);
+
+
+                } else {
+
+                    // Si está en PORTRAIT conseguir los datos de su layout
+                    ImageView elImageView = findViewById(R.id.imageView4);
+                    elImageView.setImageBitmap(bitmap);
+
+                }
+
                 Data datos = new Data.Builder().putString("nombre",user).putString("foto", uriimagen.toString()).build();
                 OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(SetFoto4Worker.class).setInputData(datos).build();
                 WorkManager.getInstance(this).enqueue(otwr);

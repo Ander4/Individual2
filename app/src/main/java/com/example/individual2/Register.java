@@ -9,7 +9,9 @@ import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -40,13 +42,42 @@ public class Register extends AppCompatActivity {
     }
 
     public void onRegister(View view) {
-        EditText editText = findViewById(R.id.usernameR);
-        String nombre = editText.getText().toString();
 
         System.out.println("token: " + token);
 
-        EditText editText2 = findViewById(R.id.passwordR);
-        String pass = editText2.getText().toString();
+        EditText et;
+        EditText et2;
+
+        String nombre;
+        String pass;
+
+        // Comprobar la orientación del dispositivo
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
+            // Si está en LANDSCAPE conseguir los datos de su layout
+
+            // Conseguir el usuario introducido
+            et = findViewById(R.id.usernameRL);
+            nombre = et.getText().toString();
+            // Conseguir la contraseña introducida
+            et2 = findViewById(R.id.passwordRL);
+            pass = et2.getText().toString();
+
+
+        } else {
+
+            // Si está en PORTRAIT conseguir los datos de su layout
+
+            // Conseguir el usuario introducido
+            et = findViewById(R.id.usernameR);
+            nombre = et.getText().toString();
+            // Conseguir la contraseña introducida
+            et2 = findViewById(R.id.passwordR);
+            pass = et2.getText().toString();
+
+        }
+
         Data datos = new Data.Builder().putString("nombre",nombre).build();
         OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(GetUserWorker.class).setInputData(datos).build();
 
