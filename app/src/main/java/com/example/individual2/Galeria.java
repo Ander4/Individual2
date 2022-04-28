@@ -46,7 +46,7 @@ public class Galeria extends AppCompatActivity {
         Bundle b = iin.getExtras();
         user = (String) b.get("user");
 
-        getImages();
+        //getImages();
 
     }
 
@@ -169,7 +169,7 @@ public class Galeria extends AppCompatActivity {
         if (requestCode == 4 && resultCode == RESULT_OK) {
             ImageView elImageView = findViewById(R.id.imageView);
 
-            //setNumFoto();
+            setNumFoto();
             //System.out.println("NUM FOTOS: " + numFoto);
             Bitmap bitmapFoto = null;
             try {
@@ -225,6 +225,9 @@ public class Galeria extends AppCompatActivity {
 
                 ImageView elImageView = findViewById(R.id.imageView2);
                 elImageView.setImageBitmap(bitmap);
+                Data datos = new Data.Builder().putString("nombre",user).putString("foto", uriimagen.toString()).build();
+                OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(SetFoto2Worker.class).setInputData(datos).build();
+                WorkManager.getInstance(this).enqueue(otwr);
                 break;
 
             }
@@ -233,6 +236,9 @@ public class Galeria extends AppCompatActivity {
 
                 ImageView elImageView = findViewById(R.id.imageView3);
                 elImageView.setImageBitmap(bitmap);
+                Data datos = new Data.Builder().putString("nombre",user).putString("foto", uriimagen.toString()).build();
+                OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(SetFoto3Worker.class).setInputData(datos).build();
+                WorkManager.getInstance(this).enqueue(otwr);
                 break;
 
             }
@@ -241,6 +247,9 @@ public class Galeria extends AppCompatActivity {
 
                 ImageView elImageView = findViewById(R.id.imageView4);
                 elImageView.setImageBitmap(bitmap);
+                Data datos = new Data.Builder().putString("nombre",user).putString("foto", uriimagen.toString()).build();
+                OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(SetFoto4Worker.class).setInputData(datos).build();
+                WorkManager.getInstance(this).enqueue(otwr);
                 break;
 
             }

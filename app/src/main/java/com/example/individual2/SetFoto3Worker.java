@@ -1,13 +1,18 @@
 package com.example.individual2;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.net.Uri;
+import android.provider.MediaStore;
+import android.util.Base64;
 
 import androidx.annotation.NonNull;
 import androidx.work.ListenableWorker;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
@@ -27,16 +32,48 @@ public class SetFoto3Worker extends Worker {
         HttpURLConnection urlConnection;
 
         String nombre = getInputData().getString("nombre");
-        String foto = getInputData().getString("foto");
-        String col = getInputData().getString("col");
+        String imagen = getInputData().getString("foto");
+        Uri uriImagen = Uri.parse(imagen);
+        Bitmap bitmapFoto = null;
+        try {
+            bitmapFoto = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), uriImagen);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        int anchoDestino = 180;
+        int altoDestino = 180;
+        int anchoImagen = bitmapFoto.getWidth();
+        int altoImagen = bitmapFoto.getHeight();
+        float ratioImagen = (float) anchoImagen / (float) altoImagen;
+        float ratioDestino = (float) anchoDestino / (float) altoDestino;
+        int anchoFinal = anchoDestino;
+        int altoFinal = altoDestino;
+        System.out.println(anchoFinal + " " + altoFinal);
+        if (ratioDestino > ratioImagen) {
+            anchoFinal = (int) ((float)altoDestino * ratioImagen);
+        } else {
+            altoFinal = (int) ((float)anchoDestino / ratioImagen);
+        }
+        Bitmap bitmapredimensionado = Bitmap.createScaledBitmap(bitmapFoto,anchoFinal,altoFinal,true);
+
+        Matrix matrix = new Matrix();
+
+        matrix.postRotate(90);
+
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmapredimensionado, anchoFinal, altoFinal, true);
+
+        Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] fototransformada = stream.toByteArray();
+        String fotoen64 = Base64.encodeToString(fototransformada,Base64.DEFAULT);
 
         Uri.Builder builder = new Uri.Builder()
                 .appendQueryParameter("nombre", nombre)
-                .appendQueryParameter("foto", foto)
-                .appendQueryParameter("col", col);
+                .appendQueryParameter("foto", fotoen64);
         String parametros = builder.build().getEncodedQuery();
-
-        System.out.println(nombre + " " + col + " " + foto);
 
         try {
             URL destino = new URL(direccion);
