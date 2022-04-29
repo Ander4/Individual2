@@ -1,6 +1,8 @@
 package com.example.individual2;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -15,11 +17,13 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class GetFoto2Worker extends Worker {
 
@@ -30,16 +34,22 @@ public class GetFoto2Worker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
+        // Definir la direccion del php
         String direccion = "http://ec2-52-56-170-196.eu-west-2.compute.amazonaws.com/aeiros001/WEB/getFoto2.php";
         HttpURLConnection urlConnection;
 
+        // Conseguir los datos
         String user = getInputData().getString("nombre");
 
+        // Crear la uri
         Uri.Builder builder = new Uri.Builder()
                 .appendQueryParameter("nombre", user);
         String parametros = builder.build().getEncodedQuery();
 
+
         try {
+
+            // Abrir la conexión
             URL destino = new URL(direccion);
             urlConnection = (HttpURLConnection) destino.openConnection();
             urlConnection.setConnectTimeout(5000);
@@ -52,34 +62,35 @@ public class GetFoto2Worker extends Worker {
             out.close();
             int statusCode = urlConnection.getResponseCode();
             if (statusCode == 200) {
-                BufferedInputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-                String line, result = "";
-                System.out.println("Resultado del Query: " + user);
-                while ((line = bufferedReader.readLine()) != null) {
-                    result += line;
-                }
-                JSONArray jsonArray = new JSONArray(result);
-                ArrayList<String> lista = new ArrayList<>();
-                for(int i = 0; i < jsonArray.length(); i++)
-                {
-                    String nombre = jsonArray.getJSONObject(i).getString("nombre");
-                    lista.add(nombre);
-                }
-                inputStream.close();
 
-                Data resultados = new Data.Builder()
-                        .putString("datos",lista.toString())
-                        .build();
-                System.out.println(resultados);
-                return Result.success(resultados);
+                // Si el codigo es 200(RESULT OK) recoger la foto
+                Bitmap elBitmap = BitmapFactory.decodeStream(urlConnection.getInputStream());
+                System.out.println(elBitmap);
+                try {
+
+                    Scanner s = new Scanner(urlConnection.getInputStream()).useDelimiter("\\A");
+                    String result = s.hasNext() ? s.next() : "";
+
+                    // Guardar el Bitmap de la foto en un ficehro para poder leerls despues
+                    OutputStreamWriter fichero = new OutputStreamWriter(getApplicationContext().openFileOutput("foto.txt",
+                            Context.MODE_PRIVATE));
+                    fichero.write(result);
+                    fichero.close();
+
+                    // Devolver result success
+                    return Result.success();
+
+                } catch (IOException e){
+
+                    e.printStackTrace();
+
+                }
+
             }
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
             e.printStackTrace();
         }
 

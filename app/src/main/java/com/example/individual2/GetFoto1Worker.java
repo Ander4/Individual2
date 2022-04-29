@@ -36,17 +36,23 @@ public class GetFoto1Worker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
+
+        // Definir la direccion del php
         String direccion = "http://ec2-52-56-170-196.eu-west-2.compute.amazonaws.com/aeiros001/WEB/getFoto1.php";
         HttpURLConnection urlConnection;
 
+        // Conseguir los datos
         String user = getInputData().getString("nombre");
 
+        // Crear la uri
         Uri.Builder builder = new Uri.Builder()
                 .appendQueryParameter("nombre", user);
         String parametros = builder.build().getEncodedQuery();
 
 
         try {
+
+            // Abrir la conexión
             URL destino = new URL(direccion);
             urlConnection = (HttpURLConnection) destino.openConnection();
             urlConnection.setConnectTimeout(5000);
@@ -59,17 +65,22 @@ public class GetFoto1Worker extends Worker {
             out.close();
             int statusCode = urlConnection.getResponseCode();
             if (statusCode == 200) {
+
+                // Si el codigo es 200(RESULT OK) recoger la foto
                 Bitmap elBitmap = BitmapFactory.decodeStream(urlConnection.getInputStream());
                 System.out.println(elBitmap);
                 try {
-                    System.out.println("User del worker GETFOTO1: " + user);
 
                     Scanner s = new Scanner(urlConnection.getInputStream()).useDelimiter("\\A");
                     String result = s.hasNext() ? s.next() : "";
+
+                    // Guardar el Bitmap de la foto en un ficehro para poder leerls despues
                     OutputStreamWriter fichero = new OutputStreamWriter(getApplicationContext().openFileOutput("foto.txt",
                             Context.MODE_PRIVATE));
                     fichero.write(result);
                     fichero.close();
+
+                    // Devolver result success
                     return Result.success();
 
                 } catch (IOException e){
@@ -85,9 +96,6 @@ public class GetFoto1Worker extends Worker {
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
 
         return Result.failure();
     }
