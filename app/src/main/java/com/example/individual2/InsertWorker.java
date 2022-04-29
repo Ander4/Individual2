@@ -31,20 +31,24 @@ public class InsertWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
+
+        // Definir la direccion del php
         String direccion = "http://ec2-52-56-170-196.eu-west-2.compute.amazonaws.com/aeiros001/WEB/insert.php";
         HttpURLConnection urlConnection;
-//        String pokimon = getInputData().getString("pokimon");
-//        String parametros = "nombrePokemon="+pokimon;
 
+        // Conseguir los datos
         String nombre = getInputData().getString("nombre");
         String pass = getInputData().getString("pass");
 
+        // Crear la uri
         Uri.Builder builder = new Uri.Builder()
                 .appendQueryParameter("nombre", nombre)
                 .appendQueryParameter("pass", pass);
         String parametros = builder.build().getEncodedQuery();
 
         try {
+
+            // Abrir la conexión
             URL destino = new URL(direccion);
             urlConnection = (HttpURLConnection) destino.openConnection();
             urlConnection.setConnectTimeout(5000);
@@ -59,6 +63,8 @@ public class InsertWorker extends Worker {
             int statusCode = urlConnection.getResponseCode();
             System.out.println(statusCode);
             if (statusCode == 200) {
+
+                // Si el statusCode es 200(OK), devolver resultSuccess
                 return Result.success();
             }
 
