@@ -108,6 +108,7 @@ public class Register extends AppCompatActivity {
                                 // Cambiar al MainActivity
                                 Intent i = new Intent(Register.this, MainActivity.class);
                                 startActivityForResult(i, 66);
+                                finish();
 
                             }else {
 
