@@ -29,18 +29,24 @@ public class GetWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
+
+        // Definir la direccion del php
         String direccion = "http://ec2-52-56-170-196.eu-west-2.compute.amazonaws.com/aeiros001/WEB/select.php";
         HttpURLConnection urlConnection;
 
+        // Conseguir los datos
         String user = getInputData().getString("nombre");
         String pass = getInputData().getString("pass");
 
+        // Crear la uri
         Uri.Builder builder = new Uri.Builder()
                 .appendQueryParameter("nombre", user)
                 .appendQueryParameter("pass", pass);
         String parametros = builder.build().getEncodedQuery();
 
         try {
+
+            // Abrir la conexión
             URL destino = new URL(direccion);
             urlConnection = (HttpURLConnection) destino.openConnection();
             urlConnection.setConnectTimeout(5000);
@@ -53,6 +59,8 @@ public class GetWorker extends Worker {
             out.close();
             int statusCode = urlConnection.getResponseCode();
             if (statusCode == 200) {
+
+                // Si el statusCode es 200(OK), Conseguir el resultado del query
                 BufferedInputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
                 String line, result = "";
@@ -69,10 +77,13 @@ public class GetWorker extends Worker {
                 }
                 inputStream.close();
 
+                // Crear el parametro resultados para devolverlo
                 Data resultados = new Data.Builder()
                         .putString("datos",lista.toString())
                         .build();
                 System.out.println(resultados);
+
+                // Devolver resultSuccess y el resultado
                 return Result.success(resultados);
             }
 
