@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -28,6 +29,7 @@ public class Register extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register);
 
+        // Conseguir el token del Firebase
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(new OnCompleteListener<String>() {
                     @Override
@@ -43,11 +45,9 @@ public class Register extends AppCompatActivity {
 
     public void onRegister(View view) {
 
-        System.out.println("token: " + token);
-
+        // Definir parametros
         EditText et;
         EditText et2;
-
         String nombre;
         String pass;
 
@@ -78,6 +78,7 @@ public class Register extends AppCompatActivity {
 
         }
 
+        // Llamar al worker para comprobar la información con los datos recibidos
         Data datos = new Data.Builder().putString("nombre",nombre).build();
         OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(GetUserWorker.class).setInputData(datos).build();
 
@@ -87,26 +88,32 @@ public class Register extends AppCompatActivity {
                     public void onChanged(WorkInfo workInfo) {
                         if(workInfo != null && workInfo.getState().isFinished()){
 
+                            // Conseguir el resultado del worker
                             String result = workInfo.getOutputData().getString("datos");
-                            System.out.println("Resultado");
-                            System.out.println(result);
-                            System.out.println("[" + nombre + "]");
-                            //System.out.println(result.equals("[" + nombre + "]"));
-                            System.out.println(result);
 
+                            // Comprobar el resultado
                             if (!result.equals("[" + nombre + "]")) {
 
-                                System.out.println("No Hay un nombre igual");
+                                // Si el resultado no coincide con el nombre llamar al worker `para Insertarlo en la base de datos
                                 Data datos2 = new Data.Builder().putString("nombre", nombre).putString("pass", pass).build();
                                 OneTimeWorkRequest otwr2 = new OneTimeWorkRequest.Builder(InsertWorker.class).setInputData(datos2).build();
                                 WorkManager.getInstance(Register.this).enqueue(otwr2);
 
+                                // Llamar al worker para enviar el mensaje FCM, el cual enviará una notificación avisando
+                                // de que se ha añadido el usuario a la base de datos
                                 Data datos3 = new Data.Builder().putString("id",token).putString("nombre",nombre).build();
                                 OneTimeWorkRequest otwr3 = new OneTimeWorkRequest.Builder(FCMWorker.class).setInputData(datos3).build();
                                 WorkManager.getInstance(Register.this).enqueue(otwr3);
 
+                                // Cambiar al MainActivity
                                 Intent i = new Intent(Register.this, MainActivity.class);
                                 startActivityForResult(i, 66);
+
+                            }else {
+
+                                // Si el resultado coincide hacer un toast indicándolo
+                                Toast toast = Toast.makeText(Register.this, "El usuario " + nombre + " ya está registrado", Toast.LENGTH_SHORT);
+                                toast.show();
 
                             }
 

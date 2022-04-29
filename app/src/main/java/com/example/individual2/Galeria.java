@@ -53,68 +53,9 @@ public class Galeria extends AppCompatActivity {
 
     }
 
-    private void getImages(){
-
-        Data datos = new Data.Builder().putString("nombre",user).build();
-        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(GetFoto1Worker.class).setInputData(datos).build();
-        WorkManager.getInstance(this).getWorkInfoByIdLiveData(otwr.getId())
-                .observe(this, new Observer<WorkInfo>() {
-                    @Override
-                    public void onChanged(WorkInfo workInfo) {
-                        if(workInfo != null && workInfo.getState().isFinished()){
-
-                            String result = workInfo.getOutputData().getString("datos");
-                            System.out.println("Resultado");
-                            System.out.println(result);
-
-                            System.out.println("Estoy en worker para coger foto de la base de datos");
-
-                            try {
-                                BufferedReader ficherointerno = new BufferedReader(new InputStreamReader(
-                                        openFileInput("foto.txt")));
-                                String Linea = ficherointerno.lines().collect(Collectors.joining());
-                                ficherointerno.close();
-
-                                System.out.println("UWU "+Linea);
-
-                                byte[] decodedString = Base64.decode(Linea, Base64.DEFAULT);
-                                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-
-                                ImageView img  = findViewById(R.id.imageView);
-                                img.setImageBitmap(decodedByte);
-
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-//                            if (result != null) {
-//
-//                                try {
-//                                    BufferedReader ficherointerno = new BufferedReader(new InputStreamReader(
-//                                            openFileInput("nombrefichero.txt")));
-//                                    String Linea = ficherointerno.lines().collect(Collectors.joining());
-//                                    ficherointerno.close();
-//
-//                                    Bitmap bitmap = StringToBitMap(Linea);
-//
-//                                    ImageView elImageView = findViewById(R.id.imageView);
-//                                    elImageView.setImageBitmap(bitmap);
-//
-//                                } catch (IOException e) {
-//                                    e.printStackTrace();
-//                                }
-//
-//                            }
-
-                        }
-                    }
-                });
-        WorkManager.getInstance(this).enqueue(otwr);
-
-    }
-
     private void setNumFotoPortrait(){
 
+        // Definir los imageView
         ImageView elImageView = findViewById(R.id.imageView);
         ImageView elImageView2 = findViewById(R.id.imageView2);
         ImageView elImageView3 = findViewById(R.id.imageView3);
@@ -122,23 +63,23 @@ public class Galeria extends AppCompatActivity {
 
         if (elImageView.getDrawable() == null) {
 
+            // Si la foto no tiene drawable la siguiente foto se pondrá en ese imageView
             numFoto = 1;
-            System.out.println("Es null la foto1");
 
         } else if (elImageView2.getDrawable() == null) {
 
+            // Si la foto no tiene drawable la siguiente foto se pondrá en ese imageView
             numFoto = 2;
-            System.out.println("Es null la foto2");
 
         } else if (elImageView3.getDrawable() == null) {
 
+            // Si la foto no tiene drawable la siguiente foto se pondrá en ese imageView
             numFoto = 3;
-            System.out.println("Es null la foto3");
 
         } else if (elImageView4.getDrawable() == null) {
 
+            // Si la foto no tiene drawable la siguiente foto se pondrá en ese imageView
             numFoto = 4;
-            System.out.println("Es null la foto4");
 
         }
 
@@ -146,6 +87,7 @@ public class Galeria extends AppCompatActivity {
 
     private void setNumFotoLandscape(){
 
+        // Definir los imageView
         ImageView elImageView = findViewById(R.id.imageView5);
         ImageView elImageView2 = findViewById(R.id.imageView6);
         ImageView elImageView3 = findViewById(R.id.imageView7);
@@ -153,23 +95,23 @@ public class Galeria extends AppCompatActivity {
 
         if (elImageView.getDrawable() == null) {
 
+            // Si la foto no tiene drawable la siguiente foto se pondrá en ese imageView
             numFoto = 1;
-            System.out.println("Es null la foto1");
 
         } else if (elImageView2.getDrawable() == null) {
 
+            // Si la foto no tiene drawable la siguiente foto se pondrá en ese imageView
             numFoto = 2;
-            System.out.println("Es null la foto2");
 
         } else if (elImageView3.getDrawable() == null) {
 
+            // Si la foto no tiene drawable la siguiente foto se pondrá en ese imageView
             numFoto = 3;
-            System.out.println("Es null la foto3");
 
         } else if (elImageView4.getDrawable() == null) {
 
+            // Si la foto no tiene drawable la siguiente foto se pondrá en ese imageView
             numFoto = 4;
-            System.out.println("Es null la foto4");
 
         }
 
@@ -177,19 +119,23 @@ public class Galeria extends AppCompatActivity {
 
     public void onEntrar(View view) {
 
+        // Definir parametros
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         String nombrefich = "IMG_" + timeStamp + "_";
         File directorio=this.getFilesDir();
         File fichImg = null;
 
+        // Crear el fichero para la imagen
         try {
             fichImg = File.createTempFile(nombrefich, ".jpg",directorio);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        // Guardar la uri del fileProvider de la foto
         uriimagen = FileProvider.getUriForFile(this, "com.example.tema17ejercicio1.provider", fichImg);
 
+        // Ejecutar la camara del movil
         Intent elIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         elIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriimagen);
         startActivityForResult(elIntent, 4);
@@ -202,6 +148,7 @@ public class Galeria extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 4 && resultCode == RESULT_OK) {
 
+            // Definir parametros
             int rotacion;
             ImageView elImageView;
 
@@ -221,7 +168,7 @@ public class Galeria extends AppCompatActivity {
                 rotacion = 90;
 
             }
-            //System.out.println("NUM FOTOS: " + numFoto);
+            // Sacar el Bitmap de la foto
             Bitmap bitmapFoto = null;
             try {
                 bitmapFoto = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uriimagen);
@@ -229,6 +176,7 @@ public class Galeria extends AppCompatActivity {
                 e.printStackTrace();
             }
 
+            // Definir parametros para el redimensionamiento de la foto
             int anchoDestino = elImageView.getWidth();
             int altoDestino = elImageView.getHeight();
             int anchoImagen = bitmapFoto.getWidth();
@@ -243,23 +191,24 @@ public class Galeria extends AppCompatActivity {
             } else {
                 altoFinal = (int) ((float)anchoDestino / ratioImagen);
             }
+            // Redimensionar la foto
             Bitmap bitmapredimensionado = Bitmap.createScaledBitmap(bitmapFoto,anchoFinal,altoFinal,true);
 
+            // Al redimensionar la foto en orientación PORTRAIT se gira por lo tanto tengo que girarla para que aparezca bien
+            // en el imageView
             Matrix matrix = new Matrix();
-
             matrix.postRotate(rotacion);
-
             Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmapredimensionado, anchoFinal, altoFinal, true);
-
             Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
 
+            // Poner la imagen en el imageView correspondiente
             setImages(rotatedBitmap);
         }
     }
 
     private void setImages(Bitmap bitmap){
 
-
+        // Dependiendo del numFoto poner la foto en un imageView u otro
 
         switch (numFoto){
 
@@ -282,6 +231,7 @@ public class Galeria extends AppCompatActivity {
 
                 }
 
+                // Llamar al worker para que guarde la foto en la base de datos
                 Data datos = new Data.Builder().putString("nombre",user).putString("foto", uriimagen.toString()).build();
                 OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(SetFoto1Worker.class).setInputData(datos).build();
                 WorkManager.getInstance(this).enqueue(otwr);
@@ -307,6 +257,7 @@ public class Galeria extends AppCompatActivity {
 
                 }
 
+                // Llamar al worker para que guarde la foto en la base de datos
                 Data datos = new Data.Builder().putString("nombre",user).putString("foto", uriimagen.toString()).build();
                 OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(SetFoto2Worker.class).setInputData(datos).build();
                 WorkManager.getInstance(this).enqueue(otwr);
@@ -333,6 +284,7 @@ public class Galeria extends AppCompatActivity {
 
                 }
 
+                // Llamar al worker para que guarde la foto en la base de datos
                 Data datos = new Data.Builder().putString("nombre",user).putString("foto", uriimagen.toString()).build();
                 OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(SetFoto3Worker.class).setInputData(datos).build();
                 WorkManager.getInstance(this).enqueue(otwr);
@@ -359,6 +311,7 @@ public class Galeria extends AppCompatActivity {
 
                 }
 
+                // Llamar al worker para que guarde la foto en la base de datos
                 Data datos = new Data.Builder().putString("nombre",user).putString("foto", uriimagen.toString()).build();
                 OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(SetFoto4Worker.class).setInputData(datos).build();
                 WorkManager.getInstance(this).enqueue(otwr);

@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -29,31 +30,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        ActivityManager am= (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-//            if (am.isBackgroundRestricted()==true){
-//                ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.READ_PHONE_STATE},1);
-//            }
-//        }
-
-//        FirebaseMessaging.getInstance().getToken()
-//                .addOnCompleteListener(new OnCompleteListener<String>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<String> task) {
-//                        if (!task.isSuccessful()) {
-//                            return;
-//                        }
-//                        String token = task.getResult();
-//                    }
-//                });
-
     }
 
     public void onEntrar(View view) {
 
+        // Definir los parametros
         EditText et;
         EditText et2;
-
         String nombre;
         String pass;
 
@@ -84,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        // Llamar al worker para comprobar la información con los datos recibidos
         Data datos = new Data.Builder().putString("nombre",nombre).putString("pass",pass).build();
         OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(GetWorker.class).setInputData(datos).build();
         WorkManager.getInstance(this).getWorkInfoByIdLiveData(otwr.getId())
@@ -92,15 +76,22 @@ public class MainActivity extends AppCompatActivity {
                     public void onChanged(WorkInfo workInfo) {
                         if(workInfo != null && workInfo.getState().isFinished()){
 
+                            // Conseguir el resultado del worker
                             String result = workInfo.getOutputData().getString("datos");
-                            System.out.println("Resultado");
-                            System.out.println(result);
 
+                            // Comprobar el resultado
                             if (result.equals("["+nombre+"]")) {
 
+                                // Si el resultado coincide con el nombre Cambiar al activity Galeria
                                 Intent i = new Intent(MainActivity.this, Galeria.class);
                                 i.putExtra("user",nombre);
                                 startActivityForResult(i, 66);
+
+                            } else {
+
+                                // Si el resultado no coincide hacer un toast indicándolo
+                                Toast toast = Toast.makeText(MainActivity.this, "El usuario " + nombre + " y la contraseña no coinciden", Toast.LENGTH_SHORT);
+                                toast.show();
 
                             }
 
@@ -112,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onRegister(View v){
 
+        // Al darle al boton register cambiar al activity Register
         Intent i = new Intent(this, Register.class);
         startActivityForResult(i, 66);
 
